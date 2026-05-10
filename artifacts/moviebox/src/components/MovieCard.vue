@@ -42,6 +42,8 @@ function onImgError(e: Event) {
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.2s;
+  min-width: 0;
+  width: 100%;
 }
 .movie-card:hover { transform: translateY(-2px); }
 
