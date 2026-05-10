@@ -21,5 +21,8 @@
     "vue": "^3.5.13",
     "vue-router": "^4.6.4",
     "vue-tsc": "^2.2.10"
+  },
+  "dependencies": {
+    "artplayer": "^5.4.0"
   }
 }

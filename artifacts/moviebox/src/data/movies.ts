@@ -5,13 +5,14 @@ export interface Movie {
   poster: string;
   badge?: string;
   languages: string[];
-  type: "movie" | "series" | "animation";
+  type: "movie" | "series" | "animation" | "live-tv" | "short" | "sport";
   genre: string[];
   year: string;
   description: string;
   rating: string;
   seasons?: number;
   region?: string;
+  isFree?: boolean;
 }
 
 export interface BannerSlide {
@@ -984,6 +985,30 @@ export const ugandanMovies: Movie[] = [
   },
 ];
 
+export const liveChannels: Movie[] = [
+  { id: "nbs-tv", title: "NBS TV", href: "/watch/nbs-tv", poster: "https://placehold.co/300x200/101a2a/1cb7ff?text=NBS+TV", languages: ["en", "lg"], type: "live-tv", genre: ["News", "Entertainment"], year: "2025", description: "Uganda's leading news and entertainment channel.", rating: "8.0", region: "Uganda", isFree: true },
+  { id: "ntv-uganda", title: "NTV Uganda", href: "/watch/ntv-uganda", poster: "https://placehold.co/300x200/1a1a10/2ff58b?text=NTV", languages: ["en", "lg"], type: "live-tv", genre: ["News", "Sports"], year: "2025", description: "Nation Television Uganda — news, sports and lifestyle.", rating: "8.2", region: "Uganda", isFree: true },
+  { id: "bukedde-tv", title: "Bukedde TV", href: "/watch/bukedde-tv", poster: "https://placehold.co/300x200/2a1010/ff6b6b?text=Bukedde", languages: ["lg"], type: "live-tv", genre: ["Entertainment", "Culture"], year: "2025", description: "Luganda-language TV covering culture, drama and local news.", rating: "7.9", region: "Uganda", isFree: true },
+  { id: "wbs-tv", title: "WBS TV", href: "/watch/wbs-tv", poster: "https://placehold.co/300x200/101a1a/06b6d4?text=WBS", languages: ["en", "lg"], type: "live-tv", genre: ["Entertainment", "Music"], year: "2025", description: "Wavah Broadcasting Service — music and entertainment.", rating: "7.5", region: "Uganda" },
+  { id: "spark-tv", title: "Spark TV", href: "/watch/spark-tv", poster: "https://placehold.co/300x200/1a0a2a/a855f7?text=Spark", languages: ["en"], type: "live-tv", genre: ["News", "Business"], year: "2025", description: "Business, politics and news channel.", rating: "7.8", region: "Uganda" },
+  { id: "cnn-live", title: "CNN International", href: "/watch/cnn-live", poster: "https://placehold.co/300x200/2a0a0a/ef4444?text=CNN", languages: ["en"], type: "live-tv", genre: ["News", "World"], year: "2025", description: "World's leading international news network.", rating: "8.5", region: "USA" },
+  { id: "bbc-world", title: "BBC World News", href: "/watch/bbc-world", poster: "https://placehold.co/300x200/0a1a2a/3b82f6?text=BBC", languages: ["en"], type: "live-tv", genre: ["News", "Documentary"], year: "2025", description: "BBC's global news and documentary channel.", rating: "8.7", region: "UK" },
+  { id: "al-jazeera", title: "Al Jazeera English", href: "/watch/al-jazeera", poster: "https://placehold.co/300x200/1a1a0a/eab308?text=AJ", languages: ["en"], type: "live-tv", genre: ["News", "World"], year: "2025", description: "Independent global news and current affairs.", rating: "8.3", region: "Qatar" },
+  { id: "supersport-1", title: "SuperSport 1", href: "/watch/supersport-1", poster: "https://placehold.co/300x200/0a2a0a/22c55e?text=SS1", languages: ["en"], type: "live-tv", genre: ["Sports", "Football"], year: "2025", description: "Live football, rugby, cricket and more.", rating: "9.0", region: "Africa" },
+  { id: "eurosport", title: "Eurosport", href: "/watch/eurosport", poster: "https://placehold.co/300x200/0a0a2a/6366f1?text=Euro", languages: ["en"], type: "live-tv", genre: ["Sports", "Tennis"], year: "2025", description: "Europe's top sports channel — cycling, tennis, athletics.", rating: "8.4", region: "Europe" },
+];
+
+export const shortSeries: Movie[] = [
+  { id: "short-love-story", title: "Short Love Story", href: "/watch/short-love-story", poster: `${TMDB}/8UlWHLMpgZm9379znIw49z2SkCL.jpg`, languages: ["en"], type: "short", genre: ["Romance", "Drama"], year: "2025", description: "A 5-episode micro-series about two strangers who meet on a train.", rating: "8.1", seasons: 1, isFree: true },
+  { id: "night-shift-short", title: "Night Shift", href: "/watch/night-shift-short", poster: `${TMDB}/rktDFPbfHfUbArZ6OOOKsXcv0Xs.jpg`, languages: ["en"], type: "short", genre: ["Thriller", "Mystery"], year: "2025", description: "A nurse discovers something disturbing during the overnight shift.", rating: "7.9", seasons: 1, isFree: true },
+  { id: "commute-diaries", title: "Commute Diaries", href: "/watch/commute-diaries", poster: `${TMDB}/qNBAXBIQlnOThrVvA6mA2B5ggkZ.jpg`, languages: ["en", "lg"], type: "short", genre: ["Comedy", "Slice of Life"], year: "2025", description: "Hilarious encounters on Kampala's daily commute. Local flavour.", rating: "8.3", seasons: 1, isFree: true },
+  { id: "five-minute-chef", title: "5-Minute Chef", href: "/watch/five-minute-chef", poster: `${TMDB}/4m1Au3YkjqsxF8iwQy0fPYSxE68.jpg`, languages: ["en", "lg"], type: "short", genre: ["Comedy", "Food"], year: "2025", description: "A chaotic cook tries to make gourmet meals in exactly 5 minutes.", rating: "7.7", seasons: 1 },
+  { id: "one-room-drama", title: "One Room Drama", href: "/watch/one-room-drama", poster: `${TMDB}/9nhjGzpNfHGmRSfBkRJl4q0EKKY.jpg`, languages: ["en"], type: "short", genre: ["Drama", "Comedy"], year: "2025", description: "A flatmate sitcom — 8 minutes of chaos per episode.", rating: "8.0", seasons: 2 },
+  { id: "boda-boda-tales", title: "Boda Boda Tales", href: "/watch/boda-boda-tales", poster: "https://placehold.co/300x445/1a2a1a/2ff58b?text=BB+Tales", languages: ["lg", "en"], type: "short", genre: ["Comedy", "Drama"], year: "2025", description: "Stories from the streets of Kampala told from a boda boda rider's perspective.", rating: "8.5", seasons: 1, isFree: true },
+  { id: "market-day", title: "Market Day", href: "/watch/market-day", poster: "https://placehold.co/300x445/2a1a0a/f97316?text=Market+Day", languages: ["lg", "en"], type: "short", genre: ["Drama", "Culture"], year: "2024", description: "Life, love and laughter at Owino Market.", rating: "8.2", seasons: 1, isFree: true },
+  { id: "football-fever", title: "Football Fever", href: "/watch/football-fever", poster: `${TMDB}/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg`, languages: ["en", "lg"], type: "short", genre: ["Sports", "Comedy"], year: "2025", description: "A village football team's journey to the national championship.", rating: "7.8", seasons: 1 },
+];
+
 export function getAllMovies(): Movie[] {
   return [
     ...popularSeries,
@@ -992,6 +1017,8 @@ export function getAllMovies(): Movie[] {
     ...blackShows,
     ...trendingShows,
     ...ugandanMovies,
+    ...shortSeries,
+    ...liveChannels,
   ];
 }
 
