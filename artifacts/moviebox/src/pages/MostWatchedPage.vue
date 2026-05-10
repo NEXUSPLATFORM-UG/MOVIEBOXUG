@@ -13,7 +13,10 @@
             <p class="rank-title">{{ movie.title }}</p>
             <div class="rank-meta">
               <span class="rank-badge">{{ movie.type }}</span>
-              <span class="rank-rating">⭐ {{ movie.rating }}</span>
+              <span class="rank-rating">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fbb827"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {{ movie.rating }}
+              </span>
               <span class="rank-year">{{ movie.year }}</span>
             </div>
             <p class="rank-desc">{{ movie.description }}</p>
@@ -52,24 +55,24 @@ function onImgErr(e: Event) {
 <style scoped>
 .page-root { min-height: 100vh; background: #101114; color: white; }
 .page-hero {
-  padding: 32px 20px 20px;
+  padding: 20px 16px 16px;
   background: linear-gradient(180deg, #16181d 0%, #101114 100%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.page-title { font-size: 26px; font-weight: 800; margin: 0 0 4px; }
-.page-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin: 0; }
-.page-content { padding: 12px 16px 40px; max-width: 800px; }
+.page-title { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+.page-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin: 0; }
+.page-content { padding: 8px 12px 40px; max-width: 800px; }
 
 .rank-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 0;
+  gap: 10px;
+  padding: 10px 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .rank-num {
-  font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.25);
-  width: 36px; text-align: center; flex-shrink: 0;
+  font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.25);
+  width: 28px; text-align: center; flex-shrink: 0;
 }
 .rank-num.top3 {
   background: linear-gradient(135deg, #1cb7ff, #2ff58b);
@@ -77,30 +80,39 @@ function onImgErr(e: Event) {
   -webkit-text-fill-color: transparent; color: transparent;
 }
 .rank-card {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 10px;
   flex: 1; text-decoration: none; min-width: 0;
 }
 .rank-poster {
-  width: 56px; height: 80px; object-fit: cover;
-  border-radius: 6px; flex-shrink: 0;
+  width: 44px; height: 64px; object-fit: cover;
+  border-radius: 5px; flex-shrink: 0;
   background: #2b2e39;
 }
 .rank-info { min-width: 0; flex: 1; }
 .rank-title {
-  font-size: 14px; font-weight: 600; color: white;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 4px;
+  font-size: 13px; font-weight: 600; color: white;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 3px;
 }
-.rank-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.rank-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
 .rank-badge {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  padding: 1px 6px; border-radius: 4px;
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 4px;
   background: rgba(28,183,255,0.15); color: #1cb7ff;
 }
-.rank-rating { font-size: 11px; color: #fbb827; }
-.rank-year { font-size: 11px; color: rgba(255,255,255,0.4); }
+.rank-rating { font-size: 10px; color: #fbb827; display: flex; align-items: center; gap: 2px; }
+.rank-year { font-size: 10px; color: rgba(255,255,255,0.4); }
 .rank-desc {
-  font-size: 12px; color: rgba(255,255,255,0.45); margin: 0;
+  font-size: 11px; color: rgba(255,255,255,0.45); margin: 0;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .rank-trend { flex-shrink: 0; display: flex; align-items: center; }
+
+@media (min-width: 768px) {
+  .page-hero { padding: 32px 20px 20px; }
+  .page-title { font-size: 26px; }
+  .page-sub { font-size: 13px; }
+  .rank-poster { width: 56px; height: 80px; }
+  .rank-num { font-size: 22px; width: 36px; }
+  .rank-title { font-size: 14px; }
+}
 </style>

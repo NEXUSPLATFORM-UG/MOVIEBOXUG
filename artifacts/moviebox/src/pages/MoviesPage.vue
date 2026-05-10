@@ -1,7 +1,10 @@
 <template>
   <div class="page-wrap">
     <div class="page-header">
-      <span class="page-icon">🎬</span>
+      <svg class="page-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="2" stroke="white" stroke-width="1.5"/>
+        <path d="M8 4v16M16 4v16M2 12h20M2 8h6M16 8h6M2 16h6M16 16h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
       <h1 class="page-title">Movies</h1>
       <span class="page-sub">All Translated Movies in Uganda</span>
     </div>
@@ -62,11 +65,15 @@ const filtered = computed(() => {
 </script>
 
 <style scoped>
-.page-wrap { padding: 18px 14px 40px; }
-.page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-.page-icon { font-size: 22px; }
-.page-title { font-size: 20px; font-weight: 700; color: white; margin: 0; }
-.page-sub { font-size: 12px; color: rgba(255,255,255,0.4); }
-.result-count { font-size: 12px; color: rgba(255,255,255,0.35); margin: 0 0 12px; }
+.page-wrap { padding: 14px 10px 40px; }
+.page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.page-icon { flex-shrink: 0; }
+.page-title { font-size: 18px; font-weight: 700; color: white; margin: 0; }
+.page-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+.result-count { font-size: 11px; color: rgba(255,255,255,0.35); margin: 0 0 10px; }
 .empty-state { text-align: center; color: rgba(255,255,255,0.4); padding: 60px 20px; font-size: 14px; }
+@media (min-width: 768px) {
+  .page-wrap { padding: 18px 14px 40px; }
+  .page-title { font-size: 20px; }
+}
 </style>

@@ -842,9 +842,9 @@ export const trendingShows: Movie[] = [
     region: "USA",
   },
   {
-    id: "warfare",
+    id: "warfare-2025",
     title: "Warfare",
-    href: "/watch/warfare",
+    href: "/watch/warfare-2025",
     poster: `${TMDB}/lSuM97AXPKfSCCyH1UAnknPBcvH.jpg`,
     languages: ["en"],
     type: "movie",

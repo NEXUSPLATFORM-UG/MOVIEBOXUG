@@ -37,7 +37,8 @@ function onImgError(e: Event) {
 
 <style scoped>
 .movie-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.2s;
@@ -51,6 +52,7 @@ function onImgError(e: Event) {
   background: #2b2e39;
   border-radius: 5px 5px 0 0;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .poster-img {
@@ -103,24 +105,27 @@ function onImgError(e: Event) {
 
 .card-footer {
   background: rgba(255,255,255,0.05);
-  padding: 5px 5px 6px;
+  padding: 4px 5px 5px;
   border-radius: 0 0 5px 5px;
-  min-height: 28px;
+  height: 26px;
+  display: flex;
+  align-items: center;
 }
 
 .card-title {
   color: rgba(255,255,255,0.75);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
-  line-height: 1.35;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .card-title { font-size: 12px; }
-  .card-footer { padding: 5px 6px 7px; min-height: 30px; }
+  .card-footer { padding: 5px 6px 7px; height: 30px; }
 }
 </style>

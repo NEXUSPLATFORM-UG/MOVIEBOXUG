@@ -18,6 +18,9 @@ defineProps<{ movies: Movie[] }>();
   align-items: start;
 }
 
+@media (max-width: 479px) {
+  .movie-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+}
 @media (min-width: 480px) {
   .movie-grid { grid-template-columns: repeat(4, 1fr); }
 }

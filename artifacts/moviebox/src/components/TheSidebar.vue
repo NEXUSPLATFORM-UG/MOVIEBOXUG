@@ -3,7 +3,6 @@
     <div v-if="isOpen" class="sidebar-overlay" @click="$emit('close')" />
 
     <div class="sidebar-inner">
-      <!-- Language selector -->
       <div class="lang-section">
         <button class="lang-btn" @click="langOpen = !langOpen">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -45,8 +44,8 @@
 
       <div class="divider" />
 
-      <!-- Admin link -->
-      <RouterLink v-if="isAdmin" to="/admin" class="admin-link" @click="$emit('close')">
+      <!-- Admin link — always visible -->
+      <RouterLink to="/admin" class="admin-link" @click="$emit('close')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
         </svg>
@@ -75,13 +74,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { useAuth } from "../stores/useAuth";
 
 defineProps<{ isOpen: boolean }>();
 defineEmits<{ close: [] }>();
 
 const route = useRoute();
-const { isAdmin } = useAuth();
 const langOpen = ref(false);
 const currentLang = ref("ENG");
 
@@ -232,7 +229,7 @@ const navItems = [
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%); transition: transform 0.3s ease;
-    top: 124px; width: 260px; box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+    top: 80px; width: 260px; box-shadow: 4px 0 20px rgba(0,0,0,0.5);
   }
   .sidebar--open { transform: translateX(0); }
   .sidebar-overlay {

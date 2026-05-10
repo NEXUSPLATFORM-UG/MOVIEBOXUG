@@ -1,7 +1,10 @@
 <template>
   <div class="page-wrap">
     <div class="page-header">
-      <span class="page-icon">📺</span>
+      <svg class="page-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="7" width="20" height="14" rx="2" stroke="white" stroke-width="1.5"/>
+        <path d="M8 7L12 3l4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
       <h1 class="page-title">TV Series</h1>
       <span class="page-sub">Watch in Luganda, Luo, Teso &amp; More</span>
     </div>
@@ -62,11 +65,15 @@ const filtered = computed(() => {
 </script>
 
 <style scoped>
-.page-wrap { padding: 18px 14px 40px; }
-.page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-.page-icon { font-size: 22px; }
-.page-title { font-size: 20px; font-weight: 700; color: white; margin: 0; }
-.page-sub { font-size: 12px; color: rgba(255,255,255,0.4); }
-.result-count { font-size: 12px; color: rgba(255,255,255,0.35); margin: 0 0 12px; }
+.page-wrap { padding: 14px 10px 40px; }
+.page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.page-icon { flex-shrink: 0; }
+.page-title { font-size: 18px; font-weight: 700; color: white; margin: 0; }
+.page-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+.result-count { font-size: 11px; color: rgba(255,255,255,0.35); margin: 0 0 10px; }
 .empty-state { text-align: center; color: rgba(255,255,255,0.4); padding: 60px 20px; font-size: 14px; }
+@media (min-width: 768px) {
+  .page-wrap { padding: 18px 14px 40px; }
+  .page-title { font-size: 20px; }
+}
 </style>

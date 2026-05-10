@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="watch-header">
       <div class="wh-left">
-        <button class="back-btn" @click="goBack">
+        <button class="back-btn" @click="goBack" title="Go back">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M5 12l7-7M5 12l7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -13,17 +13,17 @@
           <span class="wh-ug">UG</span>
         </RouterLink>
       </div>
-      <div class="wh-title">{{ movie?.title ?? "Loading…" }}</div>
+      <div class="wh-title">{{ movie?.title ?? "Loading..." }}</div>
       <div class="wh-right">
         <button v-if="canAccess" class="dl-btn" @click="handleDownload" title="Download">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3v13M7 11l5 5 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 19h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
           <span class="dl-label">Download</span>
         </button>
-        <button v-else class="dl-btn locked" @click="openSubscriptionModal" title="Subscribe to download">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <button v-else class="dl-btn locked" @click="handleLockedDownload" title="Subscribe to download">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="11" width="18" height="11" rx="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
             <path d="M7 11V7a5 5 0 0110 0v4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -39,18 +39,23 @@
 
     <div v-if="!movie" class="not-found">
       <p>Content not found.</p>
-      <RouterLink to="/" class="go-home">← Back to Home</RouterLink>
+      <RouterLink to="/" class="go-home">Back to Home</RouterLink>
     </div>
 
     <div v-else class="watch-body">
       <div class="watch-main">
         <!-- Player -->
         <div class="player-section">
-          <!-- Subscription Gate Overlay -->
           <div class="player-wrap">
+            <!-- Subscription Gate Overlay -->
             <div v-if="!canAccess" class="gate-overlay">
               <div class="gate-inner">
-                <div class="gate-lock">🔒</div>
+                <div class="gate-lock">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#1cb7ff" stroke-width="1.5"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#1cb7ff" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
                 <h3 class="gate-title">Premium Content</h3>
                 <p class="gate-sub">Subscribe to watch this {{ movie.type === 'movie' ? 'movie' : 'series' }} and unlock thousands more.</p>
                 <div class="gate-plans">
@@ -59,7 +64,7 @@
                     <div class="gate-plan-price">UGX {{ plan.price.toLocaleString() }}</div>
                   </div>
                 </div>
-                <button class="gate-sub-btn" @click="openSubscriptionModal">Subscribe Now</button>
+                <button class="gate-sub-btn" @click="handleSubscribeClick">Subscribe Now</button>
                 <p v-if="!isLoggedIn" class="gate-login">
                   Already subscribed? <button @click="openLogin">Sign in</button>
                 </p>
@@ -83,7 +88,9 @@
             <button v-for="ep in currentEpisodes" :key="ep.num" class="episode-item" :class="{ active: activeEp === ep.num }" @click="activeEp = ep.num">
               <div class="ep-thumb">
                 <span class="ep-num">{{ ep.num }}</span>
-                <div class="ep-play-icon">▶</div>
+                <div class="ep-play-icon">
+                  <svg width="10" height="10" viewBox="0 0 14 14" fill="white"><path d="M3 2l8 5-8 5V2z"/></svg>
+                </div>
               </div>
               <div class="ep-info">
                 <div class="ep-title">Episode {{ ep.num }}</div>
@@ -103,21 +110,27 @@
               <div class="info-badges">
                 <span class="badge-pill">{{ movie.year }}</span>
                 <span class="badge-pill">{{ movie.type === "series" ? `${movie.seasons} Seasons` : movie.type === "short" ? "Short Series" : movie.type === "live-tv" ? "Live TV" : "Movie" }}</span>
-                <span class="badge-pill star">⭐ {{ movie.rating }}</span>
+                <span class="badge-pill star">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#fbb827"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {{ movie.rating }}
+                </span>
                 <span v-for="g in movie.genre" :key="g" class="badge-pill genre">{{ g }}</span>
                 <span v-if="movie.isFree" class="badge-pill free">FREE</span>
               </div>
             </div>
             <div class="info-actions">
               <button v-if="canAccess" class="action-dl-btn" @click="handleDownload">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                   <path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
                 Download
               </button>
-              <button v-else class="action-sub-btn" @click="openSubscriptionModal">
-                👑 Get Premium
+              <button v-else class="action-sub-btn" @click="handleSubscribeClick">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M2 19h20M3 8l4 5 5-8 5 8 4-5 1 11H2L3 8z" stroke="#fbb827" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Get Premium
               </button>
             </div>
           </div>
@@ -139,7 +152,9 @@
           <div class="episode-grid">
             <button v-for="ep in currentEpisodes" :key="ep.num" class="ep-grid-item" :class="{ active: activeEp === ep.num }" @click="activeEp = ep.num">
               <span class="ep-grid-num">{{ ep.num }}</span>
-              <div class="ep-grid-play" v-if="activeEp === ep.num">▶</div>
+              <div class="ep-grid-play" v-if="activeEp === ep.num">
+                <svg width="10" height="10" viewBox="0 0 14 14" fill="#0d0e11"><path d="M3 2l8 5-8 5V2z"/></svg>
+              </div>
             </button>
           </div>
         </div>
@@ -288,122 +303,157 @@ onBeforeUnmount(() => {
   if (artInstance) { artInstance.destroy(); artInstance = null; }
 });
 
-function goBack() { router.back(); }
+function goBack() {
+  if (window.history.length > 1) {
+    router.back();
+  } else {
+    router.push("/");
+  }
+}
 
-function handleDownload() {
-  if (!canAccess.value) { openSubscriptionModal(); return; }
+function handleSubscribeClick() {
+  if (!isLoggedIn.value) {
+    openLogin();
+  } else {
+    openSubscriptionModal();
+  }
+}
+
+function handleLockedDownload() {
+  if (!isLoggedIn.value) {
+    openLogin();
+  } else {
+    openSubscriptionModal();
+  }
+}
+
+async function handleDownload() {
+  if (!canAccess.value) {
+    handleSubscribeClick();
+    return;
+  }
   downloadToast.value = true;
   setTimeout(() => { downloadToast.value = false; }, 3000);
-  const link = document.createElement("a");
-  link.href = "https://artplayer.org/assets/sample/video.mp4";
-  link.download = `${movie.value?.title ?? "video"}.mp4`;
-  link.click();
+
+  const videoUrl = "https://artplayer.org/assets/sample/video.mp4";
+  const filename = `${(movie.value?.title ?? "video").replace(/[^a-z0-9]/gi, "_")}.mp4`;
+
+  try {
+    const response = await fetch(videoUrl);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  } catch {
+    const link = document.createElement("a");
+    link.href = videoUrl;
+    link.download = filename;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
 </script>
 
 <style scoped>
 .watch-root { min-height: 100vh; background: #0d0e11; color: white; font-family: inherit; }
 
-/* Header */
-.watch-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; padding: 0 14px; height: 52px; background: rgba(13,14,17,0.97); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.07); gap: 10px; }
-.wh-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.wh-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
-.back-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.watch-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; padding: 0 12px; height: 48px; background: rgba(13,14,17,0.97); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.07); gap: 10px; }
+.wh-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.wh-right { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
+.back-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
 .back-btn:hover { background: rgba(255,255,255,0.16); }
 .wh-logo { display: flex; align-items: center; gap: 4px; text-decoration: none; }
-.wh-logo-img { height: 22px; }
-.wh-ug { font-size: 12px; font-weight: 800; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.wh-title { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wh-logo-img { height: 20px; }
+.wh-ug { font-size: 11px; font-weight: 800; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.wh-title { flex: 1; min-width: 0; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Download button */
-.dl-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.dl-btn { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 18px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 11px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
 .dl-btn:hover { opacity: 0.9; }
 .dl-btn.locked { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.4); }
 .dl-btn.locked:hover { background: rgba(255,255,255,0.12); }
-.wh-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.wh-icon-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-/* Not found */
 .not-found { text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5); }
 .go-home { color: #1cb7ff; text-decoration: none; font-size: 14px; }
 
-/* Watch body */
 .watch-body { display: flex; flex-direction: column; }
 .watch-main { display: flex; align-items: flex-start; background: #000; }
 .player-section { flex: 1; min-width: 0; }
 
-/* Player wrap */
 .player-wrap { width: 100%; aspect-ratio: 16 / 9; background: #000; position: relative; overflow: hidden; }
 .artplayer-wrap { width: 100%; height: 100%; }
 
-/* Subscription gate */
 .gate-overlay { position: absolute; inset: 0; z-index: 10; background: rgba(10,10,15,0.92); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-.gate-inner { text-align: center; padding: 24px 20px; max-width: 380px; }
-.gate-lock { font-size: 40px; margin-bottom: 12px; }
-.gate-title { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
-.gate-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin: 0 0 18px; line-height: 1.5; }
-.gate-plans { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
-.gate-plan { padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); text-align: center; }
+.gate-inner { text-align: center; padding: 20px 16px; max-width: 360px; }
+.gate-lock { display: flex; justify-content: center; margin-bottom: 12px; }
+.gate-title { font-size: 18px; font-weight: 800; margin: 0 0 8px; }
+.gate-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin: 0 0 14px; line-height: 1.5; }
+.gate-plans { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.gate-plan { padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); text-align: center; }
 .gate-plan.popular { border-color: #2ff58b; background: rgba(47,245,139,0.08); }
-.gate-plan-label { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 3px; }
-.gate-plan-price { font-size: 12px; font-weight: 700; color: white; }
-.gate-sub-btn { padding: 13px 32px; border-radius: 12px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 15px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; margin-bottom: 12px; }
+.gate-plan-label { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 2px; }
+.gate-plan-price { font-size: 11px; font-weight: 700; color: white; }
+.gate-sub-btn { padding: 11px 28px; border-radius: 10px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; margin-bottom: 10px; }
 .gate-sub-btn:hover { opacity: 0.9; }
-.gate-login { font-size: 12px; color: rgba(255,255,255,0.4); margin: 0; }
-.gate-login button { background: none; border: none; color: #1cb7ff; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: underline; }
+.gate-login { font-size: 11px; color: rgba(255,255,255,0.4); margin: 0; }
+.gate-login button { background: none; border: none; color: #1cb7ff; cursor: pointer; font-size: 11px; font-weight: 600; text-decoration: underline; }
 
-/* Episodes sidebar */
-.episodes-sidebar { width: 260px; flex-shrink: 0; max-height: calc(9 / 16 * (100vw - 260px)); overflow-y: auto; background: #16181d; border-left: 1px solid rgba(255,255,255,0.06); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-.sidebar-header { position: sticky; top: 0; z-index: 2; background: #16181d; padding: 10px 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.sidebar-heading { font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+.episodes-sidebar { width: 240px; flex-shrink: 0; max-height: calc(9 / 16 * (100vw - 240px)); overflow-y: auto; background: #16181d; border-left: 1px solid rgba(255,255,255,0.06); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.sidebar-header { position: sticky; top: 0; z-index: 2; background: #16181d; padding: 8px 10px 7px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sidebar-heading { font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
 .season-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .season-tabs::-webkit-scrollbar { display: none; }
-.season-tab { padding: 2px 9px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
+.season-tab { padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); font-size: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
 .season-tab.active { background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); border-color: transparent; color: #0d0e11; }
 .episode-list { padding: 4px 0; }
-.episode-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: none; background: transparent; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+.episode-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: none; background: transparent; cursor: pointer; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
 .episode-item:hover { background: rgba(255,255,255,0.05); }
 .episode-item.active { background: rgba(28,183,255,0.1); }
-.ep-thumb { width: 36px; height: 36px; border-radius: 6px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; overflow: hidden; }
-.ep-num { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); }
-.ep-play-icon { position: absolute; inset: 0; background: linear-gradient(91deg, #1cb7ff, #2ff58b); display: flex; align-items: center; justify-content: center; font-size: 13px; opacity: 0; transition: opacity 0.15s; }
+.ep-thumb { width: 32px; height: 32px; border-radius: 5px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; overflow: hidden; }
+.ep-num { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.ep-play-icon { position: absolute; inset: 0; background: linear-gradient(91deg, #1cb7ff, #2ff58b); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
 .episode-item:hover .ep-play-icon, .episode-item.active .ep-play-icon { opacity: 1; }
 .ep-info { min-width: 0; }
-.ep-title { font-size: 12px; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ep-dur { font-size: 10px; color: rgba(255,255,255,0.35); }
+.ep-title { font-size: 11px; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ep-dur { font-size: 9px; color: rgba(255,255,255,0.35); }
 
-/* Info section */
-.info-section { padding: 18px 16px 10px; background: #101114; }
+.info-section { padding: 14px 12px 10px; background: #101114; }
 .info-main { max-width: 860px; }
-.info-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.info-title { font-size: 22px; font-weight: 800; margin: 0 0 8px; }
-.info-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.badge-pill { padding: 3px 10px; border-radius: 12px; background: rgba(255,255,255,0.08); font-size: 11px; color: rgba(255,255,255,0.75); }
+.info-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.info-title { font-size: 18px; font-weight: 800; margin: 0 0 7px; }
+.info-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+.badge-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.08); font-size: 10px; color: rgba(255,255,255,0.75); }
 .badge-pill.star { background: rgba(250,180,0,0.15); color: #fbb827; }
 .badge-pill.genre { background: rgba(28,183,255,0.12); color: #1cb7ff; }
 .badge-pill.free { background: rgba(47,245,139,0.15); color: #2ff58b; font-weight: 700; }
-.info-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.action-dl-btn { display: flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 10px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+.info-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.action-dl-btn { display: flex; align-items: center; gap: 5px; padding: 8px 13px; border-radius: 8px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
 .action-dl-btn:hover { opacity: 0.9; }
-.action-sub-btn { padding: 9px 16px; border-radius: 10px; border: none; background: rgba(251,184,39,0.15); border: 1px solid rgba(251,184,39,0.3); color: #fbb827; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+.action-sub-btn { display: flex; align-items: center; gap: 5px; padding: 8px 13px; border-radius: 8px; border: 1px solid rgba(251,184,39,0.3); background: rgba(251,184,39,0.15); color: #fbb827; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
 .action-sub-btn:hover { background: rgba(251,184,39,0.22); }
-.info-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.65; margin: 0 0 14px; }
+.info-desc { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.65; margin: 0 0 12px; }
 .info-langs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.info-langs-label { font-size: 11px; color: rgba(255,255,255,0.4); }
-.lang-chip { padding: 2px 9px; border-radius: 10px; background: rgba(47,245,139,0.1); border: 1px solid rgba(47,245,139,0.2); font-size: 11px; color: #2ff58b; font-weight: 600; }
+.info-langs-label { font-size: 10px; color: rgba(255,255,255,0.4); }
+.lang-chip { padding: 2px 8px; border-radius: 8px; background: rgba(47,245,139,0.1); border: 1px solid rgba(47,245,139,0.2); font-size: 10px; color: #2ff58b; font-weight: 600; }
 
-/* Mobile episodes */
-.episodes-mobile { display: none; margin-top: 18px; }
-.episode-grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 0; }
-.ep-grid-item { width: 44px; height: 44px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.15s; }
+.episodes-mobile { display: none; margin-top: 16px; }
+.episode-grid { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 0; }
+.ep-grid-item { width: 40px; height: 40px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.15s; }
 .ep-grid-item:hover { border-color: rgba(28,183,255,0.4); color: white; }
 .ep-grid-item.active { background: linear-gradient(91deg, #1cb7ff, #2ff58b); border-color: transparent; color: #0d0e11; font-weight: 700; }
 .ep-grid-num { pointer-events: none; }
-.ep-grid-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #0d0e11; }
+.ep-grid-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 
-/* Related section — uses MovieCard component for consistent sizing */
-.related-section { padding: 18px 16px 30px; background: #101114; border-top: 1px solid rgba(255,255,255,0.06); }
-.related-heading { font-size: 16px; font-weight: 700; margin: 0 0 14px; }
-.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.related-section { padding: 14px 12px 30px; background: #101114; border-top: 1px solid rgba(255,255,255,0.06); }
+.related-heading { font-size: 14px; font-weight: 700; margin: 0 0 12px; }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 @media (min-width: 480px) { .related-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (min-width: 768px) { .related-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; } }
 @media (min-width: 1024px) {
@@ -414,15 +464,21 @@ function handleDownload() {
 @media (max-width: 1023px) { .episodes-sidebar { display: none; } .episodes-mobile { display: block; } }
 @media (max-width: 480px) { .dl-label { display: none; } .info-top-row { flex-direction: column; } }
 
-/* Download toast */
 .download-toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
   background: #1e2029; border: 1px solid rgba(47,245,139,0.3);
-  border-radius: 24px; padding: 10px 20px;
+  border-radius: 22px; padding: 9px 18px;
   display: flex; align-items: center; gap: 8px;
-  color: white; font-size: 13px; font-weight: 600;
+  color: white; font-size: 12px; font-weight: 600;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 300;
 }
 .toast-fade-enter-active, .toast-fade-leave-active { transition: opacity 0.3s, transform 0.3s; }
 .toast-fade-enter-from, .toast-fade-leave-to { opacity: 0; transform: translateX(-50%) translateY(12px); }
+
+@media (min-width: 768px) {
+  .info-title { font-size: 22px; }
+  .info-section { padding: 18px 16px 10px; }
+  .related-section { padding: 18px 16px 30px; }
+  .related-heading { font-size: 16px; }
+}
 </style>

@@ -69,7 +69,8 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 110 20A10 10 0 0112 2z" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Short Series
           </RouterLink>
-          <RouterLink to="/admin" class="more-item admin-more" @click="moreOpen = false" v-if="isAdmin">
+          <!-- Admin link — always visible -->
+          <RouterLink to="/admin" class="more-item admin-more" @click="moreOpen = false">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1z" stroke="#fbb827" stroke-width="1.5"/></svg>
             Admin Dashboard
           </RouterLink>
@@ -77,7 +78,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/></svg>
             Sign In / Register
           </button>
-          <button v-else class="more-item" @click="openSubscriptionModal(); moreOpen = false">
+          <button v-else class="more-item" @click="handleSubscription(); moreOpen = false">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#fbb827" stroke-width="1.5"/></svg>
             {{ isSubActive ? 'Subscription Active' : 'Get Premium' }}
           </button>
@@ -95,8 +96,16 @@ import { useSubscription } from "../stores/useSubscription";
 
 const route = useRoute();
 const moreOpen = ref(false);
-const { isAdmin, isLoggedIn, openLogin } = useAuth();
+const { isLoggedIn, openLogin } = useAuth();
 const { isActive: isSubActive, openSubscriptionModal } = useSubscription();
+
+function handleSubscription() {
+  if (!isLoggedIn.value) {
+    openLogin();
+  } else {
+    openSubscriptionModal();
+  }
+}
 </script>
 
 <style scoped>
@@ -104,12 +113,12 @@ const { isActive: isSubActive, openSubscriptionModal } = useSubscription();
   display: none;
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
   background: #16181d; border-top: 1px solid rgba(255,255,255,0.08);
-  height: 60px; flex-direction: row; align-items: center;
+  height: 56px; flex-direction: row; align-items: center;
   justify-content: space-around; padding: 0 4px;
 }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; padding: 6px 4px; color: rgba(255,255,255,0.45); text-decoration: none; font-size: 10px; font-weight: 500; cursor: pointer; background: none; border: none; transition: color 0.15s; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; padding: 5px 4px; color: rgba(255,255,255,0.45); text-decoration: none; font-size: 9px; font-weight: 500; cursor: pointer; background: none; border: none; transition: color 0.15s; }
 .nav-item.active { background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.nav-item span { font-size: 10px; }
+.nav-item span { font-size: 9px; }
 
 .live-icon-wrap { position: relative; }
 .live-dot-badge { position: absolute; top: 0; right: -2px; width: 7px; height: 7px; border-radius: 50%; background: #ff3b30; border: 1.5px solid #16181d; animation: lp 1.5s infinite; }
@@ -118,8 +127,8 @@ const { isActive: isSubActive, openSubscriptionModal } = useSubscription();
 .more-popup { position: fixed; inset: 0; z-index: 300; display: flex; align-items: flex-end; }
 .more-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
 .more-sheet { position: relative; width: 100%; background: #1e2029; border-radius: 16px 16px 0 0; padding: 8px 0 24px; z-index: 1; }
-.more-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 12px; }
-.more-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; transition: background 0.15s; background: none; border: none; width: 100%; cursor: pointer; }
+.more-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 10px; }
+.more-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: rgba(255,255,255,0.75); text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.15s; background: none; border: none; width: 100%; cursor: pointer; }
 .more-item:hover { background: rgba(255,255,255,0.05); }
 .admin-more { color: #fbb827; }
 

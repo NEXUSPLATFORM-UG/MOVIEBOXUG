@@ -23,7 +23,6 @@
       </div>
 
       <div class="header-right">
-        <!-- Logged in -->
         <div v-if="isLoggedIn" class="user-menu">
           <button class="user-btn" @click="userMenuOpen = !userMenuOpen">
             <div class="user-avatar">{{ currentUser?.name?.slice(0, 1).toUpperCase() }}</div>
@@ -47,7 +46,7 @@
               </svg>
               {{ isSubActive ? 'Manage Subscription' : 'Get Premium' }}
             </button>
-            <RouterLink v-if="isAdmin" to="/admin" class="ud-item" @click="userMenuOpen = false">
+            <RouterLink to="/admin" class="ud-item" @click="userMenuOpen = false">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1z" stroke="currentColor" stroke-width="1.5"/>
               </svg>
@@ -62,7 +61,6 @@
           </div>
         </div>
 
-        <!-- Not logged in -->
         <div v-else class="auth-btns">
           <button class="login-btn" @click="openLogin">Sign In</button>
           <button class="register-btn" @click="openRegister">Register</button>
@@ -80,6 +78,7 @@
       </div>
     </div>
 
+    <!-- Lang tabs: desktop only -->
     <div class="lang-tabs-row">
       <button v-for="lang in languages" :key="lang.code" class="lang-tab" :class="{ active: activeLang === lang.code }" @click="setLanguage(lang.code)">{{ lang.label }}</button>
     </div>
@@ -96,7 +95,7 @@ import { useSubscription } from "../stores/useSubscription";
 defineEmits<{ "toggle-sidebar": [] }>();
 
 const { activeLang, setLanguage } = useLanguageFilter();
-const { currentUser, isLoggedIn, isAdmin, openLogin, openRegister, logout } = useAuth();
+const { currentUser, isLoggedIn, openLogin, openRegister, logout } = useAuth();
 const { isActive: isSubActive, openSubscriptionModal } = useSubscription();
 
 const searchQuery = ref("");
@@ -142,14 +141,12 @@ function doSearch() {
 .search-input:focus { border-color: rgba(44,215,255,0.4); }
 .header-right { display: flex; align-items: center; flex-shrink: 0; margin-left: auto; gap: 8px; }
 
-/* Auth buttons */
 .auth-btns { display: flex; gap: 6px; }
 .login-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: border-color 0.2s; }
 .login-btn:hover { border-color: rgba(255,255,255,0.4); }
 .register-btn { padding: 6px 14px; border-radius: 20px; border: none; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); color: #101114; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
 .register-btn:hover { opacity: 0.9; }
 
-/* User menu */
 .user-menu { position: relative; }
 .user-btn { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 5px 10px; cursor: pointer; color: white; transition: background 0.2s; }
 .user-btn:hover { background: rgba(255,255,255,0.11); }
@@ -171,9 +168,8 @@ function doSearch() {
 .ud-item.logout { color: rgba(255,100,100,0.8); }
 .ud-item.logout:hover { color: #ff6b6b; }
 
-/* Mobile search */
 .mobile-search-row { display: none; padding: 0 12px 7px; }
-/* Lang tabs */
+
 .lang-tabs-row { display: flex; align-items: center; height: 36px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(255,255,255,0.05); background: #16181d; }
 .lang-tabs-row::-webkit-scrollbar { display: none; }
 .lang-tab { display: inline-flex; align-items: center; height: 100%; padding: 0 14px; background: none; border: none; color: rgba(255,255,255,0.45); font-size: 11px; font-weight: 700; letter-spacing: 0.7px; cursor: pointer; position: relative; white-space: nowrap; transition: color 0.15s; flex-shrink: 0; }
@@ -182,15 +178,15 @@ function doSearch() {
 .lang-tab.active::after { content: ""; position: absolute; bottom: 0; left: 10px; right: 10px; height: 2px; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); border-radius: 2px 2px 0 0; }
 
 @media (max-width: 768px) {
-  .header-top { height: 46px; padding: 0 12px; }
+  .header-top { height: 44px; padding: 0 10px; }
   .hamburger { display: flex; }
   .header-tagline { display: none; }
   .header-search { display: none; }
   .mobile-search-row { display: block; }
-  .lang-tabs-row { padding: 0 10px; height: 34px; }
-  .lang-tab { font-size: 10px; padding: 0 10px; }
-  .lang-tab.active::after { left: 6px; right: 6px; }
+  /* Hide lang tabs on mobile — they show in sidebar instead */
+  .lang-tabs-row { display: none; }
   .user-name { display: none; }
-  .register-btn span { display: none; }
+  .login-btn { padding: 5px 10px; font-size: 11px; }
+  .register-btn { padding: 5px 10px; font-size: 11px; }
 }
 </style>
