@@ -1,34 +1,48 @@
 <template>
   <div class="filter-bar">
-    <div class="filter-group">
-      <label class="filter-label">Genre</label>
-      <div class="filter-chips">
-        <button
-          v-for="g in genres"
-          :key="g"
-          class="chip"
-          :class="{ active: selectedGenre === g }"
-          @click="selectedGenre = g; emit('filter', getFilters())"
-        >{{ g }}</button>
-      </div>
+    <!-- Region row -->
+    <div class="filter-row">
+      <button
+        v-for="r in regions"
+        :key="r"
+        class="chip"
+        :class="{ active: selectedRegion === r }"
+        @click="selectedRegion = r; emitFilter()"
+      >{{ r }}</button>
     </div>
 
+    <!-- Genre row -->
     <div class="filter-row">
-      <div class="select-wrap">
-        <label class="filter-label">Year</label>
-        <select class="filter-select" v-model="selectedYear" @change="emit('filter', getFilters())">
-          <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
-        </select>
-      </div>
+      <button
+        v-for="g in genres"
+        :key="g"
+        class="chip"
+        :class="{ active: selectedGenre === g }"
+        @click="selectedGenre = g; emitFilter()"
+      >{{ g }}</button>
+    </div>
 
-      <div class="select-wrap">
-        <label class="filter-label">Sort By</label>
-        <select class="filter-select" v-model="selectedSort" @change="emit('filter', getFilters())">
-          <option value="latest">Latest</option>
-          <option value="popular">Most Popular</option>
-          <option value="rating">Top Rated</option>
-        </select>
-      </div>
+    <!-- Year row -->
+    <div class="filter-row">
+      <button
+        v-for="y in years"
+        :key="y"
+        class="chip"
+        :class="{ active: selectedYear === y }"
+        @click="selectedYear = y; emitFilter()"
+      >{{ y }}</button>
+    </div>
+
+    <!-- Sort row -->
+    <div class="filter-row">
+      <span class="row-label">Sort:</span>
+      <button
+        v-for="s in sorts"
+        :key="s.value"
+        class="chip"
+        :class="{ active: selectedSort === s.value }"
+        @click="selectedSort = s.value; emitFilter()"
+      >{{ s.label }}</button>
     </div>
   </div>
 </template>
@@ -37,70 +51,85 @@
 import { ref } from "vue";
 
 const emit = defineEmits<{
-  filter: [{ genre: string; year: string; sort: string }];
+  filter: [{ region: string; genre: string; year: string; sort: string }];
 }>();
 
-const genres = ["All", "Action", "Drama", "Comedy", "Horror", "Sci-Fi", "Romance", "Thriller", "Crime", "Fantasy", "Mystery", "Adventure"];
-const years = ["All", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018"];
+const regions = ["All", "Uganda", "USA", "Japan", "Korea", "UK", "India", "China", "Other"];
+const genres  = ["All", "Action", "Drama", "Comedy", "Horror", "Sci-Fi", "Romance", "Thriller", "Crime", "Fantasy", "Mystery", "Adventure"];
+const years   = ["All", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017"];
+const sorts   = [
+  { label: "Latest",     value: "latest"  },
+  { label: "Popular",    value: "popular" },
+  { label: "Top Rated",  value: "rating"  },
+  { label: "A–Z",        value: "az"      },
+];
 
-const selectedGenre = ref("All");
-const selectedYear = ref("All");
-const selectedSort = ref("latest");
+const selectedRegion = ref("All");
+const selectedGenre  = ref("All");
+const selectedYear   = ref("All");
+const selectedSort   = ref("latest");
 
-function getFilters() {
-  return { genre: selectedGenre.value, year: selectedYear.value, sort: selectedSort.value };
+function emitFilter() {
+  emit("filter", {
+    region: selectedRegion.value,
+    genre:  selectedGenre.value,
+    year:   selectedYear.value,
+    sort:   selectedSort.value,
+  });
 }
 </script>
 
 <style scoped>
 .filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 18px;
   background: #16181d;
   border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  overflow: hidden;
 }
 
-.filter-group {
+.filter-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  flex-wrap: nowrap;
 }
+.filter-row:last-child { border-bottom: none; }
+.filter-row::-webkit-scrollbar { display: none; }
 
-.filter-label {
+.row-label {
   font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.filter-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  color: rgba(255,255,255,0.35);
+  white-space: nowrap;
+  margin-right: 4px;
+  flex-shrink: 0;
 }
 
 .chip {
-  padding: 5px 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.6);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
   white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
 }
-
 .chip:hover {
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255,255,255,0.2);
   color: white;
 }
-
 .chip.active {
   background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%);
   border-color: transparent;
@@ -108,48 +137,8 @@ function getFilters() {
   font-weight: 700;
 }
 
-.filter-row {
-  display: flex;
-  gap: 12px;
-}
-
-.select-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-
-.filter-select {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
-  padding: 7px 10px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.filter-select:focus {
-  border-color: rgba(44, 215, 255, 0.4);
-}
-
-.filter-select option {
-  background: #1e2029;
-  color: white;
-}
-
 @media (max-width: 480px) {
-  .filter-bar {
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .chip {
-    font-size: 11px;
-    padding: 4px 10px;
-  }
+  .chip { font-size: 11px; padding: 3px 10px; }
+  .filter-row { padding: 7px 8px; }
 }
 </style>

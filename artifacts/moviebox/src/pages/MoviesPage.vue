@@ -1,117 +1,72 @@
 <template>
-  <div class="page">
+  <div class="page-wrap">
     <div class="page-header">
-      <h1 class="page-title">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="4" width="20" height="16" rx="2" stroke="url(#mov-grad)" stroke-width="1.5"/>
-          <path d="M8 4v16M16 4v16M2 12h20M2 8h6M16 8h6M2 16h6M16 16h6" stroke="url(#mov-grad2)" stroke-width="1.5" stroke-linecap="round"/>
-          <defs>
-            <linearGradient id="mov-grad" x1="2" y1="12" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#1CB7FF"/><stop offset="1" stop-color="#2FF58B"/>
-            </linearGradient>
-            <linearGradient id="mov-grad2" x1="2" y1="12" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#1CB7FF"/><stop offset="1" stop-color="#2FF58B"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        Movies
-      </h1>
-      <span class="page-subtitle">All Ugandan Language Translated Movies</span>
+      <span class="page-icon">🎬</span>
+      <h1 class="page-title">Movies</h1>
+      <span class="page-sub">All Translated Movies in Uganda</span>
     </div>
 
     <FilterBar @filter="onFilter" />
 
-    <div v-if="filteredMovies.length" class="results-info">
-      {{ filteredMovies.length }} movies found
-    </div>
+    <p class="result-count">{{ filtered.length }} movies found</p>
 
-    <MovieGrid :movies="filteredMovies" />
-
-    <div v-if="!filteredMovies.length" class="empty-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" opacity="0.3">
-        <circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/>
-        <path d="M21 21l-4.35-4.35" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <p>No movies found for this filter</p>
+    <MovieGrid v-if="filtered.length" :movies="filtered" />
+    <div v-else class="empty-state">
+      <p>No movies found for this filter combination.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import FilterBar from "../components/FilterBar.vue";
 import MovieGrid from "../components/MovieGrid.vue";
-import { popularMovies, trendingShows } from "../data/movies";
+import { popularMovies, trendingShows, ugandanMovies, type Movie } from "../data/movies";
+import { useLanguageFilter } from "../composables/useLanguageFilter";
 
-const allMovies = [...popularMovies, ...trendingShows];
+const { activeLang } = useLanguageFilter();
 
-const activeFilter = ref({ genre: "All", year: "All", sort: "latest" });
+const allMovies = computed<Movie[]>(() => [
+  ...popularMovies,
+  ...trendingShows.filter((m) => m.type === "movie"),
+  ...ugandanMovies.filter((m) => m.type === "movie"),
+]);
 
-function onFilter(f: { genre: string; year: string; sort: string }) {
-  activeFilter.value = f;
-}
+interface FilterState { region: string; genre: string; year: string; sort: string; }
+const filterState = ref<FilterState>({ region: "All", genre: "All", year: "All", sort: "latest" });
 
-const filteredMovies = computed(() => {
-  let list = [...allMovies];
-  if (activeFilter.value.genre !== "All") {
-    list = list.filter(m => m.title.length > 0);
+function onFilter(f: FilterState) { filterState.value = f; }
+
+const filtered = computed(() => {
+  let list = allMovies.value;
+
+  if (activeLang.value !== "en") {
+    list = list.filter((m) => m.languages.includes(activeLang.value));
+  }
+  if (filterState.value.region !== "All") {
+    list = list.filter((m) => m.region === filterState.value.region);
+  }
+  if (filterState.value.genre !== "All") {
+    list = list.filter((m) => m.genre.includes(filterState.value.genre));
+  }
+  if (filterState.value.year !== "All") {
+    list = list.filter((m) => m.year === filterState.value.year);
+  }
+  if (filterState.value.sort === "rating" || filterState.value.sort === "popular") {
+    list = [...list].sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+  } else if (filterState.value.sort === "az") {
+    list = [...list].sort((a, b) => a.title.localeCompare(b.title));
   }
   return list;
 });
 </script>
 
 <style scoped>
-.page {
-  padding: 20px 16px 40px;
-}
-
-.page-header {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 20px;
-  font-weight: 800;
-  color: white;
-}
-
-.page-subtitle {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 400;
-}
-
-.results-info {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 14px;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 60px 0;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
-}
-
-@media (max-width: 768px) {
-  .page {
-    padding: 14px 12px 24px;
-  }
-
-  .page-title {
-    font-size: 17px;
-  }
-}
+.page-wrap { padding: 18px 14px 40px; }
+.page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.page-icon { font-size: 22px; }
+.page-title { font-size: 20px; font-weight: 700; color: white; margin: 0; }
+.page-sub { font-size: 12px; color: rgba(255,255,255,0.4); }
+.result-count { font-size: 12px; color: rgba(255,255,255,0.35); margin: 0 0 12px; }
+.empty-state { text-align: center; color: rgba(255,255,255,0.4); padding: 60px 20px; font-size: 14px; }
 </style>

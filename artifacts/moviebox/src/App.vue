@@ -1,25 +1,32 @@
 <template>
   <div class="app-wrapper">
-    <TheHeader @toggle-sidebar="toggleSidebar" />
-    <LanguageTabs />
-    <div class="main-layout">
-      <TheSidebar :is-open="sidebarOpen" @close="sidebarOpen = false" />
-      <main class="main-content">
-        <RouterView />
-      </main>
-    </div>
-    <MobileBottomNav />
+    <template v-if="!isWatchPage">
+      <TheHeader @toggle-sidebar="toggleSidebar" />
+      <div class="main-layout">
+        <TheSidebar :is-open="sidebarOpen" @close="sidebarOpen = false" />
+        <main class="main-content">
+          <RouterView />
+        </main>
+      </div>
+      <MobileBottomNav />
+    </template>
+    <template v-else>
+      <RouterView />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import TheHeader from "./components/TheHeader.vue";
 import TheSidebar from "./components/TheSidebar.vue";
-import LanguageTabs from "./components/LanguageTabs.vue";
 import MobileBottomNav from "./components/MobileBottomNav.vue";
 
+const route = useRoute();
 const sidebarOpen = ref(false);
+
+const isWatchPage = computed(() => route.name === "watch");
 
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
@@ -38,7 +45,7 @@ function toggleSidebar() {
   display: flex;
   flex: 1;
   min-height: 0;
-  margin-top: 96px;
+  margin-top: 88px;
 }
 
 .main-content {
@@ -49,9 +56,8 @@ function toggleSidebar() {
 
 @media (max-width: 768px) {
   .main-layout {
-    margin-top: 88px;
+    margin-top: 124px;
   }
-
   .main-content {
     padding-left: 0;
     padding-bottom: 64px;

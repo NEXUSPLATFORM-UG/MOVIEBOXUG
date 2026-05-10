@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import("../pages/AnimationPage.vue"),
     },
     {
+      path: "/watch/:id",
+      name: "watch",
+      component: () => import("../pages/WatchPage.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: "/",
     },
