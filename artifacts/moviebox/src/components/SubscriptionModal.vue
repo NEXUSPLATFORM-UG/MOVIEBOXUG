@@ -183,12 +183,16 @@ function handlePay() {
   background: #1a1c22;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 16px;
-  padding: 22px 16px 18px;
+  padding: 18px 14px 14px;
   width: 100%; max-width: 400px;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  scrollbar-width: none;
   position: relative;
   box-shadow: 0 24px 60px rgba(0,0,0,0.6);
   margin: auto;
 }
+.modal-box::-webkit-scrollbar { display: none; }
 .modal-close {
   position: absolute; top: 12px; right: 12px;
   width: 28px; height: 28px; border-radius: 50%;
@@ -207,14 +211,14 @@ function handlePay() {
   color: #101114; font-size: 14px; font-weight: 700; cursor: pointer;
 }
 
-.modal-header { text-align: center; margin-bottom: 16px; }
-.crown-icon { display: flex; justify-content: center; margin-bottom: 6px; }
-.modal-title { font-size: 18px; font-weight: 800; color: white; margin: 0 0 3px; }
-.modal-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin: 0; }
+.modal-header { text-align: center; margin-bottom: 12px; }
+.crown-icon { display: flex; justify-content: center; margin-bottom: 4px; }
+.modal-title { font-size: 16px; font-weight: 800; color: white; margin: 0 0 2px; }
+.modal-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin: 0; }
 
-.plans-row { display: flex; gap: 6px; margin-bottom: 16px; }
+.plans-row { display: flex; gap: 5px; margin-bottom: 12px; }
 .plan-card {
-  flex: 1; padding: 10px 6px; border-radius: 10px;
+  flex: 1; padding: 8px 4px; border-radius: 10px;
   border: 1.5px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.04);
   cursor: pointer; text-align: center; position: relative;
@@ -233,11 +237,11 @@ function handlePay() {
 .plan-price { font-size: 12px; font-weight: 800; color: #2ff58b; }
 .plan-dur { font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 2px; }
 
-.payment-section { margin-bottom: 14px; }
-.payment-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; margin: 0 0 8px; }
-.payment-methods { display: flex; gap: 6px; margin-bottom: 12px; }
+.payment-section { margin-bottom: 10px; }
+.payment-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; margin: 0 0 6px; }
+.payment-methods { display: flex; gap: 5px; margin-bottom: 10px; }
 .method-btn {
-  flex: 1; padding: 8px 4px; border-radius: 8px;
+  flex: 1; padding: 6px 4px; border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.04);
   cursor: pointer; display: flex; flex-direction: column;
@@ -246,12 +250,12 @@ function handlePay() {
 .method-btn.selected { border-color: #1cb7ff; background: rgba(28,183,255,0.1); color: #1cb7ff; }
 .method-icon { display: flex; align-items: center; }
 .method-name { font-size: 9px; color: inherit; font-weight: 600; }
-.payment-form { display: flex; flex-direction: column; gap: 8px; }
+.payment-form { display: flex; flex-direction: column; gap: 6px; }
 .payment-form label { font-size: 10px; color: rgba(255,255,255,0.5); }
 .payment-form input {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
-  padding: 9px 12px; color: white; font-size: 13px; outline: none;
+  padding: 7px 10px; color: white; font-size: 13px; outline: none; width: 100%; box-sizing: border-box;
 }
 .payment-form input:focus { border-color: rgba(28,183,255,0.4); }
 .card-row { display: flex; gap: 8px; }
