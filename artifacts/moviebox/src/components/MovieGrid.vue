@@ -13,27 +13,28 @@ defineProps<{ movies: Movie[] }>();
 <style scoped>
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 7px;
   align-items: start;
 }
 
-@media (max-width: 479px) {
-  .movie-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+@media (max-width: 768px) {
+  .movie-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
 }
-@media (min-width: 480px) {
-  .movie-grid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (min-width: 768px) {
-  .movie-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
-}
-@media (min-width: 1024px) {
-  .movie-grid { grid-template-columns: repeat(6, 1fr); }
-}
+
 @media (min-width: 1400px) {
-  .movie-grid { grid-template-columns: repeat(7, 1fr); }
+  .movie-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
 }
+
 @media (min-width: 1800px) {
-  .movie-grid { grid-template-columns: repeat(8, 1fr); gap: 12px; }
+  .movie-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+  }
 }
 </style>
