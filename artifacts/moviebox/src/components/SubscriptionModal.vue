@@ -76,9 +76,9 @@
                   <label>Expiry</label>
                   <input v-model="cardExp" type="text" placeholder="MM/YY" maxlength="5" />
                 </div>
-                <div class="card-field">
+                <div class="card-field card-field--cvv">
                   <label>CVV</label>
-                  <input v-model="cardCvv" type="password" placeholder="123" maxlength="3" />
+                  <input v-model="cardCvv" type="password" placeholder="···" maxlength="3" />
                 </div>
               </div>
             </div>
@@ -256,6 +256,7 @@ function handlePay() {
 .payment-form input:focus { border-color: rgba(28,183,255,0.4); }
 .card-row { display: flex; gap: 8px; }
 .card-field { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.card-field--cvv { flex: 0 0 72px; }
 .pay-note { font-size: 10px; color: rgba(255,255,255,0.35); margin: 0; }
 .bank-details { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 10px; }
 .bank-row { font-size: 11px; color: rgba(255,255,255,0.7); margin: 0 0 3px; }
