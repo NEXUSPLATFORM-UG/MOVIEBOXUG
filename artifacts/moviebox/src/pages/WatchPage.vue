@@ -101,50 +101,33 @@
         </div>
       </div>
 
-      <!-- Info -->
-      <div class="info-section">
-        <div class="info-main">
-          <div class="info-top-row">
-            <div>
-              <h1 class="info-title">{{ movie.title }}</h1>
-              <div class="info-badges">
-                <span class="badge-pill">{{ movie.year }}</span>
-                <span class="badge-pill">{{ movie.type === "series" ? `${movie.seasons} Seasons` : movie.type === "short" ? "Short Series" : movie.type === "live-tv" ? "Live TV" : "Movie" }}</span>
-                <span class="badge-pill star">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#fbb827"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  {{ movie.rating }}
-                </span>
-                <span v-for="g in movie.genre" :key="g" class="badge-pill genre">{{ g }}</span>
-                <span v-if="movie.isFree" class="badge-pill free">FREE</span>
-              </div>
-            </div>
-            <div class="info-actions">
-              <button v-if="canAccess" class="action-dl-btn" @click="handleDownload">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Download
-              </button>
-              <button v-else class="action-sub-btn" @click="handleSubscribeClick">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M2 19h20M3 8l4 5 5-8 5 8 4-5 1 11H2L3 8z" stroke="#fbb827" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Get Premium
-              </button>
-            </div>
-          </div>
-          <p class="info-desc">{{ movie.description }}</p>
-          <div class="info-langs">
-            <span class="info-langs-label">Available in:</span>
-            <span v-for="lc in movie.languages" :key="lc" class="lang-chip">{{ langName(lc) }}</span>
-          </div>
+      <!-- Series controls: download, share, like + episodes -->
+      <div v-if="isSeries && episodes.length" class="series-controls">
+        <div class="controls-row">
+          <button class="ctrl-btn" @click="handleDownload">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v13M7 11l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <span>Download</span>
+          </button>
+          <button class="ctrl-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Share</span>
+          </button>
+          <button class="ctrl-btn" :class="{ liked: isLiked }" @click="isLiked = !isLiked">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" :stroke="isLiked ? '#ff4d6d' : 'currentColor'" :fill="isLiked ? '#ff4d6d' : 'none'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ isLiked ? 'Liked' : 'Like' }}</span>
+          </button>
         </div>
 
-        <!-- Mobile episode list -->
-        <div v-if="isSeries && episodes.length" class="episodes-mobile">
-          <div class="sidebar-header">
-            <span class="sidebar-heading">Episodes</span>
+        <div class="ep-section">
+          <div class="ep-section-header">
+            <span class="ep-section-title">Episodes</span>
             <div class="season-tabs">
               <button v-for="s in seasonCount" :key="s" class="season-tab" :class="{ active: activeSeason === s }" @click="activeSeason = s">S{{ s }}</button>
             </div>
@@ -303,8 +286,10 @@ onBeforeUnmount(() => {
   if (artInstance) { artInstance.destroy(); artInstance = null; }
 });
 
+const isLiked = ref(false);
+
 function goBack() {
-  if (window.history.length > 1) {
+  if (window.history.state?.back) {
     router.back();
   } else {
     router.push("/");
@@ -425,27 +410,16 @@ async function handleDownload() {
 .ep-title { font-size: 11px; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ep-dur { font-size: 9px; color: rgba(255,255,255,0.35); }
 
-.info-section { padding: 14px 12px 10px; background: #101114; }
-.info-main { max-width: 860px; }
-.info-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-.info-title { font-size: 18px; font-weight: 800; margin: 0 0 7px; }
-.info-badges { display: flex; gap: 5px; flex-wrap: wrap; }
-.badge-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.08); font-size: 10px; color: rgba(255,255,255,0.75); }
-.badge-pill.star { background: rgba(250,180,0,0.15); color: #fbb827; }
-.badge-pill.genre { background: rgba(28,183,255,0.12); color: #1cb7ff; }
-.badge-pill.free { background: rgba(47,245,139,0.15); color: #2ff58b; font-weight: 700; }
-.info-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.action-dl-btn { display: flex; align-items: center; gap: 5px; padding: 8px 13px; border-radius: 8px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
-.action-dl-btn:hover { opacity: 0.9; }
-.action-sub-btn { display: flex; align-items: center; gap: 5px; padding: 8px 13px; border-radius: 8px; border: 1px solid rgba(251,184,39,0.3); background: rgba(251,184,39,0.15); color: #fbb827; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
-.action-sub-btn:hover { background: rgba(251,184,39,0.22); }
-.info-desc { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.65; margin: 0 0 12px; }
-.info-langs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.info-langs-label { font-size: 10px; color: rgba(255,255,255,0.4); }
-.lang-chip { padding: 2px 8px; border-radius: 8px; background: rgba(47,245,139,0.1); border: 1px solid rgba(47,245,139,0.2); font-size: 10px; color: #2ff58b; font-weight: 600; }
+.series-controls { padding: 12px 12px 4px; background: #101114; border-top: 1px solid rgba(255,255,255,0.06); }
+.controls-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.ctrl-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.ctrl-btn:hover { background: rgba(255,255,255,0.09); color: white; }
+.ctrl-btn.liked { border-color: rgba(255,77,109,0.4); background: rgba(255,77,109,0.1); color: #ff4d6d; }
 
-.episodes-mobile { display: none; margin-top: 16px; }
-.episode-grid { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 0; }
+.ep-section { }
+.ep-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.ep-section-title { font-size: 13px; font-weight: 700; color: white; }
+.episode-grid { display: flex; flex-wrap: wrap; gap: 5px; padding-bottom: 12px; }
 .ep-grid-item { width: 40px; height: 40px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.15s; }
 .ep-grid-item:hover { border-color: rgba(28,183,255,0.4); color: white; }
 .ep-grid-item.active { background: linear-gradient(91deg, #1cb7ff, #2ff58b); border-color: transparent; color: #0d0e11; font-weight: 700; }
@@ -462,8 +436,8 @@ async function handleDownload() {
   .episodes-sidebar { display: flex; flex-direction: column; }
 }
 @media (min-width: 1400px) { .related-grid { grid-template-columns: repeat(7, 1fr); } }
-@media (max-width: 1023px) { .episodes-sidebar { display: none; } .episodes-mobile { display: block; } }
-@media (max-width: 480px) { .dl-label { display: none; } .info-top-row { flex-direction: column; } }
+@media (max-width: 1023px) { .episodes-sidebar { display: none; } }
+@media (max-width: 480px) { .dl-label { display: none; } }
 
 .download-toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
