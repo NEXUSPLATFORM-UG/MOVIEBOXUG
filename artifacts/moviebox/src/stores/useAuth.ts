@@ -1,31 +1,58 @@
 import { ref, computed } from "vue";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+import { doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../firebase";
+
+export const ADMIN_EMAIL = "mainplatform.nexus@gmail.com";
 
 export interface AuthUser {
-  id: string;
+  uid: string;
   name: string;
-  phone: string;
+  email: string;
   avatar?: string;
+  isAdmin: boolean;
+}
+
+export interface FirestoreUser {
+  uid: string;
+  name: string;
+  email: string;
   role: "user" | "admin";
+  createdAt?: unknown;
+  banned?: boolean;
 }
 
-const STORAGE_KEY = "mbug_auth_user";
-
-function loadUser(): AuthUser | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-const currentUser = ref<AuthUser | null>(loadUser());
+const currentUser = ref<AuthUser | null>(null);
+const authLoading = ref(true);
 const showAuthModal = ref(false);
 const authTab = ref<"login" | "register">("login");
 
+onAuthStateChanged(auth, async (fbUser) => {
+  if (fbUser) {
+    currentUser.value = {
+      uid: fbUser.uid,
+      name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+      email: fbUser.email || "",
+      avatar: fbUser.photoURL || undefined,
+      isAdmin: fbUser.email === ADMIN_EMAIL,
+    };
+  } else {
+    currentUser.value = null;
+  }
+  authLoading.value = false;
+});
+
 export function useAuth() {
   const isLoggedIn = computed(() => !!currentUser.value);
-  const isAdmin = computed(() => currentUser.value?.role === "admin");
+  const isAdmin = computed(() => currentUser.value?.email === ADMIN_EMAIL);
 
   function openLogin() {
     authTab.value = "login";
@@ -41,54 +68,91 @@ export function useAuth() {
     showAuthModal.value = false;
   }
 
-  function login(phone: string, _password: string): boolean {
-    const users = getAllUsers();
-    const user = users.find((u) => u.phone === phone);
-    if (!user) return false;
-    currentUser.value = user;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    showAuthModal.value = false;
-    return true;
-  }
-
-  function register(name: string, phone: string, _password: string): boolean {
-    const users = getAllUsers();
-    if (users.find((u) => u.phone === phone)) return false;
-    const newUser: AuthUser = {
-      id: Date.now().toString(),
-      name,
-      phone,
-      role: "user",
-    };
-    users.push(newUser);
-    localStorage.setItem("mbug_users", JSON.stringify(users));
-    currentUser.value = newUser;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
-    showAuthModal.value = false;
-    return true;
-  }
-
-  function logout() {
-    currentUser.value = null;
-    localStorage.removeItem(STORAGE_KEY);
-  }
-
-  function getAllUsers(): AuthUser[] {
+  async function login(email: string, password: string): Promise<string | null> {
     try {
-      const raw = localStorage.getItem("mbug_users");
-      const users: AuthUser[] = raw ? JSON.parse(raw) : [];
-      if (!users.find((u) => u.phone === "0700000000")) {
-        users.push({ id: "admin-1", name: "Admin", phone: "0700000000", role: "admin" });
-        localStorage.setItem("mbug_users", JSON.stringify(users));
+      await signInWithEmailAndPassword(auth, email, password);
+      showAuthModal.value = false;
+      return null;
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+        return "Invalid email or password.";
       }
-      return users;
+      return err.message || "Login failed.";
+    }
+  }
+
+  async function register(name: string, email: string, password: string): Promise<string | null> {
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name });
+      await setDoc(doc(db, "users", cred.user.uid), {
+        uid: cred.user.uid,
+        name,
+        email,
+        role: email === ADMIN_EMAIL ? "admin" : "user",
+        createdAt: serverTimestamp(),
+        banned: false,
+      } satisfies Omit<FirestoreUser, "createdAt"> & { createdAt: unknown });
+      showAuthModal.value = false;
+      return null;
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err.code === "auth/email-already-in-use") return "Email already registered.";
+      if (err.code === "auth/weak-password") return "Password must be at least 6 characters.";
+      return err.message || "Registration failed.";
+    }
+  }
+
+  async function loginWithGoogle(): Promise<string | null> {
+    try {
+      const provider = new GoogleAuthProvider();
+      const cred = await signInWithPopup(auth, provider);
+      const userRef = doc(db, "users", cred.user.uid);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          uid: cred.user.uid,
+          name: cred.user.displayName || "User",
+          email: cred.user.email || "",
+          role: cred.user.email === ADMIN_EMAIL ? "admin" : "user",
+          createdAt: serverTimestamp(),
+          banned: false,
+        });
+      }
+      showAuthModal.value = false;
+      return null;
+    } catch (e: unknown) {
+      const err = e as { code?: string; message?: string };
+      if (err.code === "auth/popup-closed-by-user") return null;
+      return err.message || "Google login failed.";
+    }
+  }
+
+  async function logout() {
+    await signOut(auth);
+  }
+
+  async function getAllUsers(): Promise<FirestoreUser[]> {
+    try {
+      const snap = await getDocs(collection(db, "users"));
+      return snap.docs.map((d) => d.data() as FirestoreUser);
     } catch {
       return [];
     }
   }
 
+  async function updateUserRole(uid: string, role: "user" | "admin") {
+    await updateDoc(doc(db, "users", uid), { role });
+  }
+
+  async function banUser(uid: string) {
+    await deleteDoc(doc(db, "users", uid));
+  }
+
   return {
     currentUser,
+    authLoading,
     isLoggedIn,
     isAdmin,
     showAuthModal,
@@ -98,7 +162,10 @@ export function useAuth() {
     closeAuthModal,
     login,
     register,
+    loginWithGoogle,
     logout,
     getAllUsers,
+    updateUserRole,
+    banUser,
   };
 }

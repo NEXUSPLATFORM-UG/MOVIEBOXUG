@@ -23,6 +23,7 @@
     "vue-tsc": "^2.2.10"
   },
   "dependencies": {
-    "artplayer": "^5.4.0"
+    "artplayer": "^5.4.0",
+    "firebase": "^12.13.0"
   }
 }

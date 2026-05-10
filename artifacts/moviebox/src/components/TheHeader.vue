@@ -1,5 +1,6 @@
 <template>
   <header class="site-header">
+    <!-- Row 1: Logo + Search + Auth (all on one row, mobile & desktop) -->
     <div class="header-top">
       <div class="header-left">
         <button class="hamburger" @click="$emit('toggle-sidebar')" aria-label="Toggle menu">
@@ -14,11 +15,11 @@
 
       <div class="header-search">
         <div class="search-wrap">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
             <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
             <path d="M21 21L16.65 16.65" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <input type="search" v-model="searchQuery" placeholder="Search movies, TV shows..." class="search-input" @keydown.enter="doSearch" />
+          <input type="search" v-model="searchQuery" placeholder="Search movies, shows..." class="search-input" @keydown.enter="doSearch" />
         </div>
       </div>
 
@@ -36,7 +37,7 @@
               <div class="ud-avatar">{{ currentUser?.name?.slice(0, 1).toUpperCase() }}</div>
               <div>
                 <p class="ud-name">{{ currentUser?.name }}</p>
-                <p class="ud-phone">{{ currentUser?.phone }}</p>
+                <p class="ud-email">{{ currentUser?.email }}</p>
               </div>
             </div>
             <div class="ud-divider" />
@@ -46,7 +47,7 @@
               </svg>
               {{ isSubActive ? 'Manage Subscription' : 'Get Premium' }}
             </button>
-            <RouterLink to="/admin" class="ud-item" @click="userMenuOpen = false">
+            <RouterLink v-if="isAdmin" to="/admin" class="ud-item" @click="userMenuOpen = false">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1z" stroke="currentColor" stroke-width="1.5"/>
               </svg>
@@ -68,20 +69,12 @@
       </div>
     </div>
 
-    <div class="mobile-search-row">
-      <div class="search-wrap">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-          <path d="M21 21L16.65 16.65" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <input type="search" v-model="searchQuery" placeholder="Search movies, shows..." class="search-input" @keydown.enter="doSearch" />
-      </div>
-      <div class="mobile-lang-tabs">
-        <button v-for="lang in languages" :key="lang.code" class="mobile-lang-tab" :class="{ active: activeLang === lang.code }" @click="setLanguage(lang.code)">{{ lang.label }}</button>
-      </div>
+    <!-- Row 2 mobile: language tabs only -->
+    <div class="mobile-lang-row">
+      <button v-for="lang in languages" :key="lang.code" class="mobile-lang-tab" :class="{ active: activeLang === lang.code }" @click="setLanguage(lang.code)">{{ lang.label }}</button>
     </div>
 
-    <!-- Lang tabs: desktop only -->
+    <!-- Row 2 desktop: language tabs -->
     <div class="lang-tabs-row">
       <button v-for="lang in languages" :key="lang.code" class="lang-tab" :class="{ active: activeLang === lang.code }" @click="setLanguage(lang.code)">{{ lang.label }}</button>
     </div>
@@ -98,7 +91,7 @@ import { useSubscription } from "../stores/useSubscription";
 defineEmits<{ "toggle-sidebar": [] }>();
 
 const { activeLang, setLanguage } = useLanguageFilter();
-const { currentUser, isLoggedIn, openLogin, openRegister, logout } = useAuth();
+const { currentUser, isLoggedIn, isAdmin, openLogin, openRegister, logout } = useAuth();
 const { isActive: isSubActive, openSubscriptionModal } = useSubscription();
 
 const searchQuery = ref("");
@@ -127,10 +120,10 @@ function doSearch() {
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 .header-top {
-  display: flex; align-items: center; height: 52px; padding: 0 16px; gap: 12px;
+  display: flex; align-items: center; height: 52px; padding: 0 16px; gap: 10px;
 }
 .header-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+.hamburger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
 .hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; }
 .logo-link { display: flex; align-items: center; gap: 4px; text-decoration: none; }
 .logo-img { height: 24px; width: auto; }
@@ -142,12 +135,12 @@ function doSearch() {
 .search-input { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 24px; padding: 7px 14px 7px 34px; color: white; font-size: 13px; outline: none; transition: border-color 0.2s; }
 .search-input::placeholder { color: rgba(255,255,255,0.35); }
 .search-input:focus { border-color: rgba(44,215,255,0.4); }
-.header-right { display: flex; align-items: center; flex-shrink: 0; margin-left: auto; gap: 8px; }
+.header-right { display: flex; align-items: center; flex-shrink: 0; gap: 8px; }
 
 .auth-btns { display: flex; gap: 6px; }
-.login-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: border-color 0.2s; }
+.login-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: border-color 0.2s; white-space: nowrap; }
 .login-btn:hover { border-color: rgba(255,255,255,0.4); }
-.register-btn { padding: 6px 14px; border-radius: 20px; border: none; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); color: #101114; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.register-btn { padding: 6px 14px; border-radius: 20px; border: none; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); color: #101114; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
 .register-btn:hover { opacity: 0.9; }
 
 .user-menu { position: relative; }
@@ -158,26 +151,27 @@ function doSearch() {
 .user-dropdown {
   position: absolute; top: calc(100% + 8px); right: 0;
   background: #1e2029; border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px; min-width: 200px;
+  border-radius: 12px; min-width: 210px;
   box-shadow: 0 12px 32px rgba(0,0,0,0.5); z-index: 200; overflow: hidden;
 }
 .user-info-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
 .ud-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1cb7ff, #2ff58b); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #101114; flex-shrink: 0; }
 .ud-name { font-size: 13px; font-weight: 600; color: white; margin: 0; }
-.ud-phone { font-size: 11px; color: rgba(255,255,255,0.4); margin: 2px 0 0; }
+.ud-email { font-size: 11px; color: rgba(255,255,255,0.4); margin: 2px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
 .ud-divider { height: 1px; background: rgba(255,255,255,0.07); }
 .ud-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 14px; background: none; border: none; color: rgba(255,255,255,0.75); font-size: 13px; cursor: pointer; transition: background 0.15s; text-decoration: none; }
 .ud-item:hover { background: rgba(255,255,255,0.06); color: white; }
 .ud-item.logout { color: rgba(255,100,100,0.8); }
 .ud-item.logout:hover { color: #ff6b6b; }
 
-.mobile-search-row { display: none; padding: 0 10px 0; background: #101114; }
-.mobile-lang-tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 5px 0 6px; gap: 2px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 6px; }
-.mobile-lang-tabs::-webkit-scrollbar { display: none; }
+/* Mobile language row (shown only on mobile) */
+.mobile-lang-row { display: none; overflow-x: auto; scrollbar-width: none; padding: 5px 10px; gap: 2px; background: #101114; border-top: 1px solid rgba(255,255,255,0.05); }
+.mobile-lang-row::-webkit-scrollbar { display: none; }
 .mobile-lang-tab { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 13px; background: none; border: 1px solid transparent; color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 700; letter-spacing: 0.6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
 .mobile-lang-tab:hover { color: rgba(255,255,255,0.8); }
 .mobile-lang-tab.active { background: rgba(28,183,255,0.12); border-color: rgba(28,183,255,0.35); color: #1cb7ff; }
 
+/* Desktop language tabs row */
 .lang-tabs-row { display: flex; align-items: center; height: 36px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(255,255,255,0.05); background: #16181d; }
 .lang-tabs-row::-webkit-scrollbar { display: none; }
 .lang-tab { display: inline-flex; align-items: center; height: 100%; padding: 0 14px; background: none; border: none; color: rgba(255,255,255,0.45); font-size: 11px; font-weight: 700; letter-spacing: 0.7px; cursor: pointer; position: relative; white-space: nowrap; transition: color 0.15s; flex-shrink: 0; }
@@ -186,11 +180,13 @@ function doSearch() {
 .lang-tab.active::after { content: ""; position: absolute; bottom: 0; left: 10px; right: 10px; height: 2px; background: linear-gradient(91deg, #1cb7ff 0%, #2ff58b 100%); border-radius: 2px 2px 0 0; }
 
 @media (max-width: 768px) {
-  .header-top { height: 44px; padding: 0 10px; }
+  .header-top { height: 44px; padding: 0 10px; gap: 6px; }
   .hamburger { display: none; }
   .header-tagline { display: none; }
-  .header-search { display: none; }
-  .mobile-search-row { display: block; }
+  .header-search { max-width: none; flex: 1; margin: 0; }
+  .search-input { font-size: 12px; padding: 5px 10px 5px 28px; }
+  .search-icon { left: 9px; }
+  .mobile-lang-row { display: flex; }
   .lang-tabs-row { display: none; }
   .user-name { display: none; }
   .login-btn { padding: 5px 10px; font-size: 11px; }

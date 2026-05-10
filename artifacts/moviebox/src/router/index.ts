@@ -1,4 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
+
+const ADMIN_EMAIL = "mainplatform.nexus@gmail.com";
 
 const router = createRouter({
   history: createWebHistory("/"),
@@ -14,6 +18,17 @@ const router = createRouter({
     { path: "/watch/:id", name: "watch", component: () => import("../pages/WatchPage.vue") },
     { path: "/:pathMatch(.*)*", redirect: "/" },
   ],
+});
+
+router.beforeEach((to) => {
+  if (to.name !== "admin") return true;
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      unsub();
+      if (user?.email === ADMIN_EMAIL) resolve(true);
+      else resolve("/");
+    });
+  });
 });
 
 export default router;

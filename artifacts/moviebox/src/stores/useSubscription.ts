@@ -1,4 +1,7 @@
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
+import { useAuth } from "./useAuth";
 
 export interface SubscriptionPlan {
   id: string;
@@ -14,7 +17,11 @@ export const subscriptionPlans: SubscriptionPlan[] = [
   { id: "1month", label: "1 Month", duration: "30 days", price: 30000 },
 ];
 
-const STORAGE_KEY = "mbug_subscription";
+const DURATIONS: Record<string, number> = {
+  "1day": 24 * 60 * 60 * 1000,
+  "1week": 7 * 24 * 60 * 60 * 1000,
+  "1month": 30 * 24 * 60 * 60 * 1000,
+};
 
 interface StoredSubscription {
   userId: string;
@@ -22,25 +29,41 @@ interface StoredSubscription {
   expiresAt: number;
 }
 
-function loadSubscription(): StoredSubscription | null {
+const storedSub = ref<StoredSubscription | null>(null);
+const showSubModal = ref(false);
+const subLoaded = ref(false);
+
+async function fetchSub(uid: string) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const sub: StoredSubscription = JSON.parse(raw);
-    if (sub.expiresAt < Date.now()) {
-      localStorage.removeItem(STORAGE_KEY);
-      return null;
+    const snap = await getDoc(doc(db, "subscriptions", uid));
+    if (snap.exists()) {
+      const data = snap.data() as StoredSubscription;
+      if (data.expiresAt > Date.now()) {
+        storedSub.value = data;
+      } else {
+        storedSub.value = null;
+      }
+    } else {
+      storedSub.value = null;
     }
-    return sub;
   } catch {
-    return null;
+    storedSub.value = null;
   }
+  subLoaded.value = true;
 }
 
-const storedSub = ref<StoredSubscription | null>(loadSubscription());
-const showSubModal = ref(false);
-
 export function useSubscription() {
+  const { currentUser } = useAuth();
+
+  watch(
+    () => currentUser.value?.uid,
+    (uid) => {
+      if (uid) fetchSub(uid);
+      else { storedSub.value = null; subLoaded.value = true; }
+    },
+    { immediate: true }
+  );
+
   const isActive = computed(() => {
     if (!storedSub.value) return false;
     return storedSub.value.expiresAt > Date.now();
@@ -58,23 +81,33 @@ export function useSubscription() {
     showSubModal.value = false;
   }
 
-  function subscribe(planId: string, userId: string = "guest") {
-    const plan = subscriptionPlans.find((p) => p.id === planId);
-    if (!plan) return;
-    const durations: Record<string, number> = {
-      "1day": 24 * 60 * 60 * 1000,
-      "1week": 7 * 24 * 60 * 60 * 1000,
-      "1month": 30 * 24 * 60 * 60 * 1000,
-    };
+  async function subscribe(planId: string) {
+    const uid = currentUser.value?.uid;
+    if (!uid) return;
     const sub: StoredSubscription = {
-      userId,
+      userId: uid,
       planId,
-      expiresAt: Date.now() + (durations[planId] ?? 24 * 60 * 60 * 1000),
+      expiresAt: Date.now() + (DURATIONS[planId] ?? DURATIONS["1day"]),
     };
-    storedSub.value = sub;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sub));
+    try {
+      await setDoc(doc(db, "subscriptions", uid), {
+        ...sub,
+        updatedAt: serverTimestamp(),
+      });
+      storedSub.value = sub;
+    } catch {
+      storedSub.value = sub;
+    }
     showSubModal.value = false;
   }
 
-  return { isActive, expiresAt, showSubModal, openSubscriptionModal, closeSubModal, subscribe };
+  return {
+    isActive,
+    expiresAt,
+    showSubModal,
+    subLoaded,
+    openSubscriptionModal,
+    closeSubModal,
+    subscribe,
+  };
 }
