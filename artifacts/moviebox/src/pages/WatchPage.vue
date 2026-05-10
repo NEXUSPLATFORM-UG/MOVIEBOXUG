@@ -51,7 +51,7 @@
             <div v-if="!canAccess" class="gate-overlay">
               <div class="gate-inner">
                 <div class="gate-lock">
-                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                     <rect x="3" y="11" width="18" height="11" rx="2" stroke="#1cb7ff" stroke-width="1.5"/>
                     <path d="M7 11V7a5 5 0 0110 0v4" stroke="#1cb7ff" stroke-width="1.5" stroke-linecap="round"/>
                   </svg>
@@ -390,20 +390,21 @@ async function handleDownload() {
 .player-wrap { width: 100%; aspect-ratio: 16 / 9; background: #000; position: relative; overflow: hidden; }
 .artplayer-wrap { width: 100%; height: 100%; }
 
-.gate-overlay { position: absolute; inset: 0; z-index: 10; background: rgba(10,10,15,0.92); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-.gate-inner { text-align: center; padding: 20px 16px; max-width: 360px; }
-.gate-lock { display: flex; justify-content: center; margin-bottom: 12px; }
-.gate-title { font-size: 18px; font-weight: 800; margin: 0 0 8px; }
-.gate-sub { font-size: 12px; color: rgba(255,255,255,0.6); margin: 0 0 14px; line-height: 1.5; }
-.gate-plans { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
-.gate-plan { padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); text-align: center; }
+.gate-overlay { position: absolute; inset: 0; z-index: 10; background: rgba(10,10,15,0.92); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); overflow: hidden; }
+.gate-inner { text-align: center; padding: 10px 12px; max-width: 340px; width: 100%; max-height: 100%; overflow-y: auto; scrollbar-width: none; }
+.gate-inner::-webkit-scrollbar { display: none; }
+.gate-lock { display: flex; justify-content: center; margin-bottom: 6px; }
+.gate-title { font-size: 13px; font-weight: 800; margin: 0 0 4px; }
+.gate-sub { font-size: 10px; color: rgba(255,255,255,0.6); margin: 0 0 8px; line-height: 1.4; }
+.gate-plans { display: flex; gap: 4px; justify-content: center; margin-bottom: 8px; }
+.gate-plan { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); text-align: center; }
 .gate-plan.popular { border-color: #2ff58b; background: rgba(47,245,139,0.08); }
-.gate-plan-label { font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 2px; }
-.gate-plan-price { font-size: 11px; font-weight: 700; color: white; }
-.gate-sub-btn { padding: 11px 28px; border-radius: 10px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; margin-bottom: 10px; }
+.gate-plan-label { font-size: 9px; color: rgba(255,255,255,0.6); margin-bottom: 2px; }
+.gate-plan-price { font-size: 10px; font-weight: 700; color: white; }
+.gate-sub-btn { padding: 7px 20px; border-radius: 8px; border: none; background: linear-gradient(91deg, #1cb7ff, #2ff58b); color: #0d0e11; font-size: 12px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; margin-bottom: 6px; }
 .gate-sub-btn:hover { opacity: 0.9; }
-.gate-login { font-size: 11px; color: rgba(255,255,255,0.4); margin: 0; }
-.gate-login button { background: none; border: none; color: #1cb7ff; cursor: pointer; font-size: 11px; font-weight: 600; text-decoration: underline; }
+.gate-login { font-size: 10px; color: rgba(255,255,255,0.4); margin: 0; }
+.gate-login button { background: none; border: none; color: #1cb7ff; cursor: pointer; font-size: 10px; font-weight: 600; text-decoration: underline; }
 
 .episodes-sidebar { width: 240px; flex-shrink: 0; max-height: calc(9 / 16 * (100vw - 240px)); overflow-y: auto; background: #16181d; border-left: 1px solid rgba(255,255,255,0.06); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
 .sidebar-header { position: sticky; top: 0; z-index: 2; background: #16181d; padding: 8px 10px 7px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
