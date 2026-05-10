@@ -58,7 +58,7 @@ function toggleSidebar() {
   padding-left: 240px;
 }
 @media (max-width: 768px) {
-  .main-layout { margin-top: 124px; }
+  .main-layout { margin-top: 162px; }
   .main-content { padding-left: 0; padding-bottom: 64px; }
 }
 </style>

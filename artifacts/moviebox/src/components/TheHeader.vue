@@ -76,6 +76,9 @@
         </svg>
         <input type="search" v-model="searchQuery" placeholder="Search movies, shows..." class="search-input" @keydown.enter="doSearch" />
       </div>
+      <div class="mobile-lang-tabs">
+        <button v-for="lang in languages" :key="lang.code" class="mobile-lang-tab" :class="{ active: activeLang === lang.code }" @click="setLanguage(lang.code)">{{ lang.label }}</button>
+      </div>
     </div>
 
     <!-- Lang tabs: desktop only -->
@@ -168,7 +171,12 @@ function doSearch() {
 .ud-item.logout { color: rgba(255,100,100,0.8); }
 .ud-item.logout:hover { color: #ff6b6b; }
 
-.mobile-search-row { display: none; padding: 0 12px 7px; }
+.mobile-search-row { display: none; padding: 0 10px 0; background: #101114; }
+.mobile-lang-tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 5px 0 6px; gap: 2px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 6px; }
+.mobile-lang-tabs::-webkit-scrollbar { display: none; }
+.mobile-lang-tab { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 13px; background: none; border: 1px solid transparent; color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 700; letter-spacing: 0.6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
+.mobile-lang-tab:hover { color: rgba(255,255,255,0.8); }
+.mobile-lang-tab.active { background: rgba(28,183,255,0.12); border-color: rgba(28,183,255,0.35); color: #1cb7ff; }
 
 .lang-tabs-row { display: flex; align-items: center; height: 36px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(255,255,255,0.05); background: #16181d; }
 .lang-tabs-row::-webkit-scrollbar { display: none; }
@@ -179,11 +187,10 @@ function doSearch() {
 
 @media (max-width: 768px) {
   .header-top { height: 44px; padding: 0 10px; }
-  .hamburger { display: flex; }
+  .hamburger { display: none; }
   .header-tagline { display: none; }
   .header-search { display: none; }
   .mobile-search-row { display: block; }
-  /* Hide lang tabs on mobile — they show in sidebar instead */
   .lang-tabs-row { display: none; }
   .user-name { display: none; }
   .login-btn { padding: 5px 10px; font-size: 11px; }
